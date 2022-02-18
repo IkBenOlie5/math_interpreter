@@ -111,6 +111,16 @@ impl<'a> Parser<'a> {
                         node: Box::new(self.factor()?),
                     })
                 }
+                Token::LeftParenthesis => {
+                    self.cur_token = self.tokens.next();
+                    let result = self.expr()?;
+                    if let Some(Token::RightParenthesis) = self.cur_token {
+                        self.cur_token = self.tokens.next();
+                        Ok(result)
+                    } else {
+                        Err("Expected ')'".to_string())
+                    }
+                }
                 _ => Err("Invalid syntax".to_string()),
             }
         } else {

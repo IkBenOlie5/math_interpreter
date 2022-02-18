@@ -8,6 +8,8 @@ pub enum Token {
     Multiply,
     Divide,
     Modulo,
+    LeftParenthesis,
+    RightParenthesis,
 }
 
 pub fn lex(text: &str) -> Result<Vec<Token>, String> {
@@ -54,6 +56,8 @@ pub fn lex(text: &str) -> Result<Vec<Token>, String> {
             '*' => tokens.push(Token::Multiply),
             '/' => tokens.push(Token::Divide),
             '%' => tokens.push(Token::Modulo),
+            '(' => tokens.push(Token::LeftParenthesis),
+            ')' => tokens.push(Token::RightParenthesis),
             _ => return Err(format!("Invalid character: {}", c)),
         }
         option_c = chars.next();

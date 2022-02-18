@@ -35,16 +35,22 @@ fn main() {
 
         let mut p = Parser::new(&tokens);
         let ast = match p.parse() {
-            Ok(ast) => ast,
+            Ok(ast) => match ast {
+                Some(ast) => ast,
+                None => continue,
+            },
             Err(e) => {
                 eprintln!("{}", e);
                 continue;
             }
         };
 
-        let result = match ast {
-            Some(ast) => visit(ast),
-            None => continue,
+        let result = match visit(ast) {
+            Ok(result) => result,
+            Err(e) => {
+                eprintln!("{}", e);
+                continue;
+            }
         };
 
         println!("{}", result);
