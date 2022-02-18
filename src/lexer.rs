@@ -10,7 +10,8 @@ pub enum Token {
     Modulo,
     LeftParenthesis,
     RightParenthesis,
-    Power
+    Power,
+    SquareRoot,
 }
 
 pub fn lex(text: &str) -> Result<Vec<Token>, String> {
@@ -60,6 +61,7 @@ pub fn lex(text: &str) -> Result<Vec<Token>, String> {
             '(' => tokens.push(Token::LeftParenthesis),
             ')' => tokens.push(Token::RightParenthesis),
             '^' => tokens.push(Token::Power),
+            '√' => tokens.push(Token::SquareRoot),
             _ => return Err(format!("Invalid character: {}", c)),
         }
         option_c = chars.next();

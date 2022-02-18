@@ -6,6 +6,7 @@ pub fn visit(node: Node) -> Result<f64, String> {
         Node::Unary { op, node } => match op {
             Operator::Plus => Ok(visit(*node)?),
             Operator::Minus => Ok(-visit(*node)?),
+            Operator::SquareRoot => Ok(visit(*node)?.sqrt()),
             _ => unreachable!(),
         },
         Node::Binary { op, left, right } => match op {
@@ -29,6 +30,7 @@ pub fn visit(node: Node) -> Result<f64, String> {
                 }
             }
             Operator::Power => Ok(visit(*left)?.powf(visit(*right)?)),
+            _ => unreachable!(),
         },
     }
 }

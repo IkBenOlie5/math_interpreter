@@ -10,6 +10,7 @@ pub enum Operator {
     Divide,
     Modulo,
     Power,
+    SquareRoot,
 }
 
 #[derive(Debug)]
@@ -103,7 +104,7 @@ impl<'a> Parser<'a> {
     }
 
     fn factor(&mut self) -> Result<Node, String> {
-        if let Some(t) = self.cur_token && matches!(t, Token::Number(_) | Token::Plus | Token::Minus | Token::LeftParenthesis) {
+        if let Some(t) = self.cur_token && matches!(t, Token::Number(_) | Token::Plus | Token::Minus | Token::LeftParenthesis | Token::SquareRoot) {
             match t {
                 Token::Number(n) => {
                     self.cur_token = self.tokens.next();
@@ -123,6 +124,14 @@ impl<'a> Parser<'a> {
                         node: Box::new(self.factor()?),
                     })
                 }
+                Token::SquareRoot => {
+                    self.cur_token = self.tokens.next();
+                    Ok(Node::Unary {
+                        op: Operator::SquareRoot,
+                        node: Box::new(self.factor()?),
+                    })
+                }
+
                 Token::LeftParenthesis => {
                     self.cur_token = self.tokens.next();
                     let result = self.expr()?;
@@ -136,7 +145,7 @@ impl<'a> Parser<'a> {
                 _ => unreachable!()
             }
         } else {
-            Err("Expected '(+/-)number' or '('".to_string())
+            Err("Expected '(+/-)number', '(' or '√'".to_string())
         }
     }
 }
