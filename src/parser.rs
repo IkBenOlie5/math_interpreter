@@ -9,6 +9,7 @@ pub enum Operator {
     Multiply,
     Divide,
     Modulo,
+    Power,
 }
 
 #[derive(Debug)]
@@ -44,7 +45,7 @@ impl<'a> Parser<'a> {
 
         let result = self.expr()?;
         if self.cur_token.is_some() {
-            Err("Expected '+', '-', '*', '/' or '%'".to_string())
+            Err("Expected '+', '-', '*', '/', '%' or '^'".to_string())
         } else {
             Ok(Some(result))
         }
@@ -69,24 +70,35 @@ impl<'a> Parser<'a> {
     }
 
     fn term(&mut self) -> Result<Node, String> {
-        let mut result = self.factor()?;
+        let mut result = self.power()?;
         while let Some(t) = self.cur_token && matches!(t, Token::Multiply | Token::Divide | Token::Modulo) {
             match t {
                 Token::Multiply => {
                     self.cur_token = self.tokens.next();
-                    result = Node::Binary{op: Operator::Multiply, left: Box::new(result), right: Box::new(self.factor()?)};
+                    result = Node::Binary{op: Operator::Multiply, left: Box::new(result), right: Box::new(self.power()?)};
                 },
                 Token::Divide => {
                     self.cur_token = self.tokens.next();
-                    result = Node::Binary{op: Operator::Divide, left: Box::new(result), right: Box::new(self.factor()?)};
+                    result = Node::Binary{op: Operator::Divide, left: Box::new(result), right: Box::new(self.power()?)};
                 },
                 Token::Modulo => {
                     self.cur_token = self.tokens.next();
-                    result = Node::Binary{op: Operator::Modulo, left: Box::new(result), right: Box::new(self.factor()?)};
+                    result = Node::Binary{op: Operator::Modulo, left: Box::new(result), right: Box::new(self.power()?)};
                 },
                 _ => unreachable!(),
             }
         }
+        Ok(result)
+    }
+
+    fn power(&mut self) -> Result<Node, String> {
+        let mut result = self.factor()?;
+
+        while let Some(t) = self.cur_token && matches!(t, Token::Power) {
+            self.cur_token = self.tokens.next();
+            result = Node::Binary{op: Operator::Power, left: Box::new(result), right: Box::new(self.factor()?)};
+        }
+
         Ok(result)
     }
 

@@ -28,6 +28,7 @@ pub fn visit(node: Node) -> Result<f64, String> {
                     Ok(visit(*left)? % right)
                 }
             }
+            Operator::Power => Ok(visit(*left)?.powf(visit(*right)?)),
         },
     }
 }
