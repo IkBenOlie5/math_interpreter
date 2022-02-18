@@ -44,7 +44,7 @@ impl<'a> Parser<'a> {
 
         let result = self.expr()?;
         if self.cur_token.is_some() {
-            Err("Invalid syntax".to_string())
+            Err("Expected '+', '-', '*', '/' or '%'".to_string())
         } else {
             Ok(Some(result))
         }
@@ -91,7 +91,7 @@ impl<'a> Parser<'a> {
     }
 
     fn factor(&mut self) -> Result<Node, String> {
-        if let Some(t) = self.cur_token {
+        if let Some(t) = self.cur_token && matches!(t, Token::Number(_) | Token::Plus | Token::Minus | Token::LeftParenthesis) {
             match t {
                 Token::Number(n) => {
                     self.cur_token = self.tokens.next();
@@ -121,10 +121,10 @@ impl<'a> Parser<'a> {
                         Err("Expected ')'".to_string())
                     }
                 }
-                _ => Err("Invalid syntax".to_string()),
+                _ => unreachable!()
             }
         } else {
-            Err("Invalid syntax".to_string())
+            Err("Expected '(+/-)number' or '('".to_string())
         }
     }
 }
